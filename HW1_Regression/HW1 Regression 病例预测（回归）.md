@@ -109,7 +109,7 @@ print(sorted(scores, reverse=True))
 - **MBGD（Mini-batch gradient descent  小批量梯度下降）**：每一次利用一小批样本，即 n 个样本进行计算，本质上就是在每个batch内部使用BGD策略，在batch外部使用SGD策略。没有考虑数据集的**稀疏度**和模型的训练时间对参数更新的影响。**不能保证很好的收敛性**（做法:学习率 大->小，两次迭代之间的变化低于某个阈值后，就减小 learning rate。此外希望对出现频率低的数据加大 lr），**容易停留在鞍点**（周围error相同）。
 - **Momentum（动量梯度下降）**：$v_t=\gamma v_{t-1}+\eta\nabla_{\theta}J(\theta), \theta=\theta-\alpha v_t$ 引入动量，累计速度，减少震荡，使梯度更新平滑。有助于模型逃脱平稳区不易陷入局部极小值（**一阶指数平滑**）。每个批次的数据含有**抽样误差**，导致**梯度更新的方向波动较大**。超参建议值：$\gamma=0.9$ 左右。
 - **NAG（Nesterov Accelerated Gradient 牛顿动量梯度下降）**：$v_t=\gamma v_{t-1}+\eta\nabla_{\theta}J(\theta_{t-1}-\alpha\gamma v_{t-1}), \theta_t=\theta_{t-1}-\alpha v_t$ 根据此次梯度和上次梯度的差值对Momentum算法得到的梯度进行修正，若差值为正，证明梯度增加，有理由相信下一个梯度会继续变大；相反两次梯度的差值为负，有理由相信下一个梯度会继续变小（**二阶指数平滑**）。**让算法提前看到前方的地形梯度**。缺点：不能根据参数的重要性对不同参数进行不同程度的更新。[6]
-- **AdaGrad（Adaptive gradient algorithm 自适学习率应梯度下降）**：$s_t=s_{t-1}+(\nabla_{\theta}J(\theta))^2, \theta_t=\theta_{t-1}-\frac{\eta}{\sqrt{s_t+\epsilon}}\cdot \nabla_{\theta}J(\theta)$ 学习率逐渐下降，依据各参数变化大小调整学习率。每个参数的学习率反比于其历史梯度平方和的平方根，对出现频率较低的参数采用较大 $\alpha$ 更新。适合处理**稀疏数据**。$\eta$ 设置过大的话，会使分母过于敏感，对梯度的调节太大；中后期，分母上梯度平方的累加太大，易使训练**提前结束**（依赖于全局学习率）。超参建议值：$\eta =0.01$。
+- **AdaGrad（Adaptive gradient algorithm 自适学习率应梯度下降）**：$s_t=s_{t-1}+(\nabla_{\theta}J(\theta))^2, \theta_t=\theta_{t-1}-\frac{\eta}{\sqrt{s_t/t+\epsilon}}\cdot \nabla_{\theta}J(\theta)$ 学习率逐渐下降，依据各参数变化大小调整学习率。每个参数的学习率反比于其历史梯度平方和的平方根，对出现频率较低的参数采用较大 $\alpha$ 更新。适合处理**稀疏数据**。$\eta$ 设置过大的话，会使分母过于敏感，对梯度的调节太大；中后期，分母上梯度平方的累加太大，易使训练**提前结束**（依赖于全局学习率）。超参建议值：$\eta =0.01$。
 - **RMSprop（root mean square prop）**：$E[g^2]_t=\rho E[g^2]_{t-1}+(1-\rho)g_t^2,\theta_{t+1}=\theta_t-\frac{\eta}{\sqrt{E[g^2]_t+\epsilon}}\cdot g_t$ 对AdaGrad算法的改进，对历史的梯度信息使用decaying average的方式进行累计（用平方梯度的移动均值替代平方梯度的总和，一阶指数平滑处理）。通常与动量一起使用。但依然**依赖于全局学习率**。Pytorch中，`centered=True` 对梯度通过估计方差来进行归一化。[7] [8]
 - **AdaDelta**：解决 RMSprop 中 $\eta$ 超参问题，维护 $\Delta x_t$ 存储模型本身中参数变化二阶导数的泄露平均值，$g_t$ 维护梯度二阶导数的泄露平均值。$E[\Delta x^2]_{t-1}=\rho E[\Delta x^2]_{t-2}+(1-\rho)\Delta x_{t-2}^2, \Delta x_t = \frac{\sqrt{E[\Delta x^2]_{t-1}+\epsilon}}{\sqrt{E[g^2]_t+\epsilon}},\Delta \theta_t=-\Delta x_t \cdot g_t$。由于初始阶段 $E[\Delta x^2]_{t-1}, E[g^2]_t$ 较小，一般在 $RMS$ 各除以 $1-\rho^t$ 来放大。训练后期，反复在局部最小值附近抖动。
 - **Adam**：结合动量和自适应学习率，既能适应稀疏梯度又能缓解梯度震荡问题。使用指数加权移动平均值来估算梯度的动量和二次矩。$v_t=\beta_1 v_{t-1}+(1-\beta_1)g_t,s_t=\beta_2s_{t-1}+(1-\beta_2)g_t^2,\Delta \theta_t=-\frac{\eta \hat{v_t}}{\sqrt{\hat{s_t}}+\epsilon}$，$\hat{v_t}=\frac{v_t}{1-\beta_1^t}, \hat{s_t}=\frac{s_t}{1-\beta_2^t}$。与 RMSProp 区别即为 $\epsilon$  的处理，此方法在实践中效果略好。超参建议值：$\beta_1=0.9,\beta_2=0.999,\epsilon=1e-8$。
@@ -122,7 +122,7 @@ torch.optim.RMSprop(params, lr=0.01, alpha=0.99, eps=1e-08, weight_decay=0, mome
 torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0,decoupled_weight_decay=False) #decoupled_weight_decay=True 则变为AdamW，忽略weight decay
 ```
 
-tricks：
+### tricks：
 
 - 增加model随机性：shuffling, dropout, gradient noise
 - Warm-up
