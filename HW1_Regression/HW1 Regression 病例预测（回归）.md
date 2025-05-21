@@ -9,15 +9,11 @@
 
 ## TODO
 
-[x] 特征选择 sklearn
-
-[x] 优化器
-
-[x] L2正则
-
-[x] 超参 optuna
-
-[x] tensorboard展示训练过程
+- [x] 特征选择 sklearn
+- [x] 优化器
+- [x] L2正则
+- [x] 超参 optuna
+- [x] tensorboard展示训练过程
 
 ### 特征选择 [1] [2]
 

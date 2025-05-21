@@ -11,9 +11,9 @@
 
 ## TODO
 
-[x] MLP + BatchNorm + dropout
-[x] LSTM
-[x] 调参
+- [x] MLP + BatchNorm + dropout
+- [x] LSTM
+- [x] 调参
 
 ### LSTM (Long Short-Term Memory) [1]
 

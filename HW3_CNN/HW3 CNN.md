@@ -5,14 +5,14 @@
 
 ## TODO
 
-[x] Augmentation Implementation
-[x] Visual Representations Implementation
-[x] CNN
-[x] Training Augmentation
-[x] add dropout layer
-[x] Test Time Augmentation
-[x] t-SNE Report
-[x] ensemble & Comparision
+- [x] Augmentation Implementation
+- [x] Visual Representations Implementation
+- [x] CNN
+- [x] Training Augmentation
+- [x] add dropout layer
+- [x] Test Time Augmentation
+- [x] t-SNE Report
+- [x] ensemble & Comparision
 
 ## Report
 
