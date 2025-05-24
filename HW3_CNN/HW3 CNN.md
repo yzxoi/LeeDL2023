@@ -1,8 +1,6 @@
 # HW3 CNN
 > 2025.5.18 - 2025.5.21
 
-## 学习目标
-
 ## TODO
 
 - [x] Augmentation Implementation
