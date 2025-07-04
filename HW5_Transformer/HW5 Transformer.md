@@ -234,4 +234,5 @@ plt.show()
 ## Reference
 
 [1] Hung-yi Lee, 【機器學習2021】Transformer (上) https://www.youtube.com/watch?v=n9TlOhRjYoc
+
 [2] Wikipedia, Transformer (deep learning architecture) https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)
