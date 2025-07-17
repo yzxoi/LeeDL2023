@@ -6,8 +6,8 @@ Generative Model 引入 Distribution：让机器拥有创造的能力。
 
 ## TODO
 
-[x] GAN
-[x] StyleGAN
+- [x] GAN
+- [x] StyleGAN
 
 ### 1 StyleGAN
 
